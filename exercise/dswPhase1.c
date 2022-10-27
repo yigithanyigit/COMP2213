@@ -178,7 +178,7 @@ NODE rightRotatorDOESNTWORK(NODE tree)
 }
 
 
-void rightRotatorRecursive()
+void rightRotatorRecursive(NODE parent, NODE grandParent)
 {
     
 }
