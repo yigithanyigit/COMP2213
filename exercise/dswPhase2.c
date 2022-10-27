@@ -115,7 +115,7 @@ NODE rightRotatorDOESNTWORK(NODE tree)
 {
     NODE node, childNode, t1, t2, t3;
     node = tree;
-    
+
     int a = sizeof(*tree);
     int b = sizeof(NODE_t);
     if (sizeof(*tree) == sizeof(NODE_t))
@@ -129,51 +129,51 @@ NODE rightRotatorDOESNTWORK(NODE tree)
     }
     */
 
-    // Recurse to the most rightest of the left
-    /*
-    if(node->left == NULL)
-    {
-        return node;
-    }
-    else
-    {
-        childNode = rightRotator(node->left);
+// Recurse to the most rightest of the left
+/*
+if(node->left == NULL)
+{
+    return node;
+}
+else
+{
+    childNode = rightRotator(node->left);
 
-        t1 = childNode->left;
-        t2 = childNode->right;
-        t3 = node->right;
+    t1 = childNode->left;
+    t2 = childNode->right;
+    t3 = node->right;
 
-        node->left = t2;
-        node->right = t3;
-        childNode->right = node;
-    }
-    
+    node->left = t2;
+    node->right = t3;
+    childNode->right = node;
+}
 
-    if (node->left != NULL)
-    {
-        // rightRotator(node->left);
 
-        childNode = rightRotator(node->left);
-        // childNode = node->left;
+if (node->left != NULL)
+{
+    // rightRotator(node->left);
 
-        t1 = childNode->left;
-        t2 = childNode->right;
-        t3 = node->right;
+    childNode = rightRotator(node->left);
+    // childNode = node->left;
 
-        node->left = t2;
-        node->right = t3;
-        childNode->right = node;
+    t1 = childNode->left;
+    t2 = childNode->right;
+    t3 = node->right;
 
-        // rightRotator(node);
+    node->left = t2;
+    node->right = t3;
+    childNode->right = node;
 
-        return childNode;
-    }
-    if (node->right != NULL)
-    {
-        node->right = rightRotator(node->right);
-    }
-    else
-        return node;
+    // rightRotator(node);
+
+    return childNode;
+}
+if (node->right != NULL)
+{
+    node->right = rightRotator(node->right);
+}
+else
+    return node;
 }
 */
 void rightRotatorRecursive(NODE parent, NODE grandParent)
@@ -202,6 +202,59 @@ void rightRotatorIterator(NODE gp)
     }
 }
 
+/*
+    scanner ← root
+for i ← 1 to count
+    child ← scanner.right
+    scanner.right ← child.right
+    scanner ← scanner.right
+    child.right ← scanner.left
+    scanner.left ← child
+*/
+/*
+ routine vine-to-tree(root, size)
+ leaves ← size + 1 − 2⌊log2(size + 1))⌋
+ compress(root, leaves)
+ size ← size − leaves
+ while size > 1
+ compress(root, ⌊size / 2⌋)
+ size ← ⌊size / 2⌋
+*/
+
+void leftRotateToXtimes(NODE root, int count)
+{
+
+    NODE temp = root;
+    for (size_t i = 0; i < count; i++)
+    {
+        NODE child = temp->right;
+        temp->right = child->right;
+        temp = temp->right;
+        child->right = temp->left;
+        temp->left = child;
+    }
+}
+
+void toBalanced(NODE root, int size)
+{
+
+    int counter, temp = size + 1, Two = 2;
+    while (temp >>= 1)
+        counter++;
+    Two = (Two << counter - 1);
+    int leaves = size + 1 - Two;
+    leftRotateToXtimes(root, leaves);
+    bst_print(root, 0);
+    printf("\n");
+    size = size - leaves;
+    while (size > 1)
+    {
+        leftRotateToXtimes(root, size / 2);
+        bst_print(root, 0);
+        printf("\n");
+        size /= 2;
+    }
+}
 
 int main()
 {
