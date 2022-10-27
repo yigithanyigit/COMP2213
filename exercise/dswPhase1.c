@@ -4,8 +4,8 @@
 typedef struct NODE_s *NODE;
 typedef struct NODE_s
 {
-    NODE left;
     NODE right;
+    NODE left; 
     int key;
     void *data;
 } NODE_t[1];
@@ -111,7 +111,7 @@ void bst_insert(BST t, int key, void *data)
     }
 }
 
-NODE rightRotator(NODE tree)
+NODE rightRotatorDOESNTWORK(NODE tree)
 {
     NODE node, childNode, t1, t2, t3;
     node = tree;
@@ -148,11 +148,13 @@ NODE rightRotator(NODE tree)
         childNode->right = node;
     }
     */
+
     if (node->left != NULL)
     {
         // rightRotator(node->left);
 
         childNode = rightRotator(node->left);
+        //childNode = node->left;
 
         t1 = childNode->left;
         t2 = childNode->right;
@@ -162,7 +164,7 @@ NODE rightRotator(NODE tree)
         node->right = t3;
         childNode->right = node;
 
-        rightRotator(node);
+        //rightRotator(node);
 
         return childNode;
     }
@@ -175,9 +177,41 @@ NODE rightRotator(NODE tree)
         return node;
 }
 
+
+void rightRotatorRecursive()
+{
+    
+}
+
+void rightRotatorIterator(NODE gp)
+{
+    NODE temp = gp->right;
+
+    while (temp)
+    {
+        if(temp->left)
+        {
+            NODE oldTmp = temp;
+            temp = temp->left;
+            oldTmp->left = temp->right;
+            temp->right = oldTmp;
+            gp->right = temp;
+        }
+        else
+        {   
+            gp = temp;
+            temp = temp->right;
+
+        }
+    }
+    
+}
+
+
 int main()
 {
     BST t1 = bst_init();
+    bst_insert(t1, 2, NULL);
     bst_insert(t1, 1, NULL);
     bst_insert(t1, 16, NULL);
     bst_insert(t1, 5, NULL);
@@ -189,7 +223,9 @@ int main()
     bst_insert(t1, 22, NULL);
     bst_insert(t1, 35, NULL);
     bst_print(t1->root, 0);
-    rightRotator(t1->root);
+    //rightRotator(t1->root);
+    NODE gp = (NODE)t1;
+    rightRotatorIterator(gp);
     bst_print(t1->root, 0);
 
     return 0;
