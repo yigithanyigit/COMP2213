@@ -247,7 +247,7 @@ void bst_delete_unbalanced_iterative(BST t, int key, void *data)
 NODE maxValueInSubTree(NODE node)
 {
     NODE temp = node;
-    while (node->right != NULL)
+    while (node->right->right != NULL)
     {
         temp = node->right;
         node = node->right;
@@ -313,16 +313,22 @@ NODE bst_delete_recursive(NODE node, int key)
          * FIRST OF ALL WE NEED TO FIND MOST LEFT OF RIGHT OR MOST RIGHT OF LEFT SUBTREE
          * AFTER THAT WE NEED TO CHANGE AND LINK TO EACH OTHER AND IN FINAL IF WE HAVE A
          * LEFT CHILD OF "MAX/MIN" NODE THEN WE NEED TO AGAIN LINK TO PARENT OF MAX
-         *
+         *    50                            60
+           /     \         delete(50)      /   \
+          40      70       --------->    40    70
+                 /  \                            \
+                60   80                           80
          */
 
         else
         {
-            NODE max = maxValueInSubTree(node->left);
+            NODE maxParent = maxValueInSubTree(node->left);
+            NODE max = maxParent->right;
 
             max->right = node->right;
+            max->left = node->left;
             node = max;
-                        
+            maxParent->right = NULL;
         }
         return node;
     }
@@ -345,11 +351,10 @@ int main()
     bst_insert(t1, 94, NULL);
     bst_insert(t1, 61, NULL);
 
-
-    bst_print(t1->root, 0); 
+    bst_print(t1->root, 0);
     printf("\n\n\n\n\n");
     bst_delete_recursive(t1->root, 89);
-    //bst_delete_unbalanced_iterative(t1, 89, NULL);
+    // bst_delete_unbalanced_iterative(t1, 89, NULL);
     bst_print(t1->root, 0);
 
     return 0;
