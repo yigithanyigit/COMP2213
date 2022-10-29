@@ -247,7 +247,7 @@ void bst_delete_unbalanced_iterative(BST t, int key, void *data)
 NODE maxValueInSubTree(NODE node)
 {
     NODE temp = node;
-    while (node->right->right != NULL)
+    while (node->right != NULL)
     {
         temp = node->right;
         node = node->right;
@@ -322,13 +322,15 @@ NODE bst_delete_recursive(NODE node, int key)
 
         else
         {
-            NODE maxParent = maxValueInSubTree(node->left);
-            NODE max = maxParent->right;
+            NODE max = maxValueInSubTree(node->left);
 
-            max->right = node->right;
-            max->left = node->left;
-            node = max;
-            maxParent->right = NULL;
+            NODE temp = bst_init_node(max->key, max->data);
+
+            bst_delete_recursive(node, max->key);
+
+            temp->right = node->right;
+            temp->left = node->left;
+            node = temp;
         }
         return node;
     }
@@ -354,6 +356,8 @@ int main()
     bst_print(t1->root, 0);
     printf("\n\n\n\n\n");
     bst_delete_recursive(t1->root, 89);
+    bst_delete_recursive(t1->root, 72);
+    //bst_delete_recursive(t1->root, 61);
     // bst_delete_unbalanced_iterative(t1, 89, NULL);
     bst_print(t1->root, 0);
 
