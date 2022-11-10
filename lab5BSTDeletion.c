@@ -357,7 +357,7 @@ int main()
     printf("\n\n\n\n\n");
     bst_delete_recursive(t1->root, 89);
     bst_delete_recursive(t1->root, 72);
-    //bst_delete_recursive(t1->root, 61);
+    bst_delete_recursive(t1->root, 93);
     // bst_delete_unbalanced_iterative(t1, 89, NULL);
     bst_print(t1->root, 0);
 
