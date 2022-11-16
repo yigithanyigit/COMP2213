@@ -334,6 +334,32 @@ NODE AVLDeletion(NODE node, int key)
 
     int balance = getBalanceFactor(node);
 
+    if (balance == 2)
+    {
+        if (node->left != NULL && node->right != NULL)
+        {
+            node->left = leftRotateOnce(node->left);
+            return rightRotateOnce(node);
+        }
+        else
+        {
+            return rightRotateOnce(node);
+        }
+    }
+    if (balance == -2)
+    {
+        if (node->left != NULL && node->right != NULL)
+        {
+            node->right = rightRotateOnce(node->right);
+            return leftRotateOnce(node);
+        }
+        else
+        {
+            return leftRotateOnce(node);
+        }
+    }
+
+    /*
     if (balance > 1 && key < node->left->key)
     {
         return rightRotateOnce(node);
@@ -352,7 +378,7 @@ NODE AVLDeletion(NODE node, int key)
         node->right = rightRotateOnce(node->right);
         return leftRotateOnce(node);
     }
-
+    */
     return node;
 }
 
@@ -401,6 +427,8 @@ int main()
     t2->root = AVLDeletion(t2->root, 18);
     t2->root = AVLDeletion(t2->root, 19);
     t2->root = AVLDeletion(t2->root, 17);
+    t2->root = AVLDeletion(t2->root, 9);
+    t2->root = AVLDeletion(t2->root, 2);
 
     bst_print(t2->root, 0);
     return 0;
