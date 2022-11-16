@@ -191,7 +191,7 @@ NODE leftRotateOnce(NODE x)
     y->left = x;
     x->right = T2;
 
-    // order of heights is important !! 
+    // order of heights is important !!
     x->height = max(height(x->left), height(x->right)) + 1;
     y->height = max(height(y->left), height(y->right)) + 1;
 
@@ -259,6 +259,103 @@ NODE AVLInsert(NODE node, int key, void *data)
     return node;
 }
 
+NODE maxValueInSubTree(NODE node)
+{
+    NODE temp = node;
+    while (node->right != NULL)
+    {
+        temp = node->right;
+        node = node->right;
+    }
+    return temp;
+}
+
+NODE AVLDeletion(NODE node, int key)
+{
+    if (node->key == key)
+    {
+        if (node->left == NULL && node->right == NULL)
+        {
+            free(node);
+            return NULL;
+        }
+        if (node->left == NULL)
+        {
+
+            NODE temp = node->right;
+            free(node);
+            return temp;
+        }
+        else if (node->right == NULL)
+        {
+
+            NODE temp = node->left;
+            free(node);
+            return temp;
+        }
+
+        /* IF HAS 2 CHILDS */
+        /**
+         * IN BALANCED BST TREE CONCEPT THIS ONE IS VERY IMPORTANT CONDITION,
+         *
+         * FIRST OF ALL WE NEED TO FIND MOST LEFT OF RIGHT OR MOST RIGHT OF LEFT SUBTREE
+         * AFTER THAT WE NEED TO CHANGE AND LINK TO EACH OTHER AND IN FINAL IF WE HAVE A
+         * LEFT CHILD OF "MAX/MIN" NODE THEN WE NEED TO AGAIN LINK TO PARENT OF MAX
+         *    50                            60
+           /     \         delete(50)      /   \
+          40      70       --------->    40    70
+                 /  \                            \
+                60   80                           80
+         */
+
+        else
+        {
+            NODE max = maxValueInSubTree(node->left);
+
+            NODE temp = bst_init_node(max->key, max->data);
+
+            AVLDeletion(node, max->key);
+
+            temp->right = node->right;
+            temp->left = node->left;
+            node = temp;
+        }
+        return node;
+    }
+
+    if (key < node->key)
+        node->left = AVLDeletion(node->left, key);
+    else if (key > node->key)
+        node->right = AVLDeletion(node->right, key);
+    else
+        return node;
+
+    node->height = max(height(node->left), height(node->right)) + 1;
+
+    int balance = getBalanceFactor(node);
+
+    if (balance > 1 && key < node->left->key)
+    {
+        return rightRotateOnce(node);
+    }
+    if (balance < -1 && key > node->right->key)
+    {
+        return leftRotateOnce(node);
+    }
+    if (balance > 1 && key > node->left->key)
+    {
+        node->left = leftRotateOnce(node->left);
+        return rightRotateOnce(node);
+    }
+    if (balance < -1 && key < node->right->key)
+    {
+        node->right = rightRotateOnce(node->right);
+        return leftRotateOnce(node);
+    }
+
+    return node;
+}
+
 int main()
 {
     BST t1 = bst_init();
@@ -294,6 +391,16 @@ int main()
     t2->root = AVLInsert(t2->root, 18, NULL);
     t2->root = AVLInsert(t2->root, 22, NULL);
     t2->root = AVLInsert(t2->root, 35, NULL);
+
+    bst_print(t2->root, 0);
+    printf("\n\n\n");
+    t2->root = AVLDeletion(t2->root, 20);
+    t2->root = AVLDeletion(t2->root, 35);
+    t2->root = AVLDeletion(t2->root, 16);
+    t2->root = AVLDeletion(t2->root, 22);
+    t2->root = AVLDeletion(t2->root, 18);
+    t2->root = AVLDeletion(t2->root, 19);
+    t2->root = AVLDeletion(t2->root, 17);
 
     bst_print(t2->root, 0);
     return 0;
