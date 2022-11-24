@@ -180,12 +180,13 @@ void rightRotatorRecursive(NODE parent, NODE grandParent)
 {
 }
 
-void rightRotatorIterator(NODE gp)
+void rightRotatorIterator(NODE gp, BST t1)
 {
     NODE temp = gp->right;
-
+    
     while (temp)
     {
+        bst_print(t1->root, 0);
         if (temp->left)
         {
             NODE oldTmp = temp;
@@ -206,6 +207,7 @@ void rightRotatorIterator(NODE gp)
 int main()
 {
     BST t1 = bst_init();
+    /*
     bst_insert(t1, 2, NULL);
     bst_insert(t1, 1, NULL);
     bst_insert(t1, 16, NULL);
@@ -217,11 +219,17 @@ int main()
     bst_insert(t1, 18, NULL);
     bst_insert(t1, 22, NULL);
     bst_insert(t1, 35, NULL);
-    bst_print(t1->root, 0);
+    */
+    bst_insert(t1, 10, NULL);
+    bst_insert(t1, 7, NULL);
+    bst_insert(t1, 6, NULL);
+    bst_insert(t1, 8, NULL);
+    bst_insert(t1, 11, NULL);
+    //bst_print(t1->root, 0);
     // rightRotator(t1->root);
     NODE gp = (NODE)t1;
-    rightRotatorIterator(gp);
-    toBalanced(t1->root, 11);
+    rightRotatorIterator(gp, t1);
+    //toBalanced(t1->root, 11);
     bst_print(t1->root, 0);
 
     return 0;
