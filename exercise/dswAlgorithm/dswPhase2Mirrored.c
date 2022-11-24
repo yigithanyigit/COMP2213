@@ -4,8 +4,9 @@
 typedef struct NODE_s *NODE;
 typedef struct NODE_s
 {
-    NODE right;
     NODE left;
+    NODE right;
+
     int key;
     void *data;
 } NODE_t[1];
@@ -202,6 +203,44 @@ void rightRotatorIterator(NODE gp)
     }
 }
 
+void leftRotatorIterator(NODE gp)
+{
+    NODE temp = gp->left;
+
+    while (temp)
+    {
+        if (temp->right)
+        {
+            NODE oldTmp = temp;
+            temp = temp->right;
+            oldTmp->right = temp->left;
+            temp->left = oldTmp;
+            gp->left = temp;
+        }
+        else
+        {
+            gp = temp;
+            temp = temp->left;
+        }
+    }
+}
+/*
+void leftRotateToXtimes(NODE root, int count)
+{
+
+    NODE temp = root->right;
+    for (size_t i = 0; i < count; i++)
+    {
+        NODE child = temp->right;
+        temp->right = child->right;
+        temp = temp->right;
+        child->right = temp->left;
+        temp->left = child;
+        bst_print(root, 0);
+    }
+}
+*/
+
 /*
     scanner ← root
 for i ← 1 to count
@@ -219,12 +258,12 @@ for i ← 1 to count
  while size > 1
  compress(root, ⌊size / 2⌋)
  size ← ⌊size / 2⌋
-*/
+
 
 void leftRotateToXtimes(NODE root, int count)
 {
 
-    NODE temp = root;
+    NODE temp = root->right;
     for (size_t i = 0; i < count; i++)
     {
         NODE child = temp->right;
@@ -232,9 +271,66 @@ void leftRotateToXtimes(NODE root, int count)
         temp = temp->right;
         child->right = temp->left;
         temp->left = child;
+        bst_print(root, 0);
+    }
+}
+*/
+
+void leftRotateToXtimes(NODE root, int count)
+{
+
+    NODE temp = root->right;
+    for (size_t i = 0; i < count; i++)
+    {
+        NODE child = temp->right;
+        temp->right = child->right;
+        temp = temp->right;
+        child->right = temp->left;
+        temp->left = child;
+        bst_print(root, 0);
     }
 }
 
+
+/*
+void rightRotatorIterator(NODE gp)
+{
+    NODE temp = gp->right;
+
+    while (temp)
+    {
+        if (temp->left)
+        {
+            NODE oldTmp = temp;
+            temp = temp->left;
+            oldTmp->left = temp->right;
+            temp->right = oldTmp;
+            gp->right = temp;
+        }
+        else
+        {
+            gp = temp;
+            temp = temp->right;
+        }
+    }
+}*/
+void rightRotateToXtimes(NODE root, int count)
+{
+    NODE temp = root->left;
+    for (size_t i = 0; i < count; i++)
+    {
+        NODE oldTmp = temp;
+        temp = temp->left;
+        root->left = temp;
+        oldTmp->left = temp->right;
+        temp->right = oldTmp;
+        root = temp;
+        temp = temp->left;
+        bst_print(root, 0);
+    }
+}
+
+/*
 void toBalanced(NODE root, int size)
 {
 
@@ -255,6 +351,26 @@ void toBalanced(NODE root, int size)
         size /= 2;
     }
 }
+*/
+void toBalancedRight(NODE root, int size)
+{
+    int counter, temp = size + 1, Two = 2;
+    while (temp >>= 1)
+        counter++;
+    Two = (Two << counter - 1);
+    int leaves = size + 1 - Two;
+    rightRotateToXtimes(root, leaves);
+    bst_print(root, 0);
+    printf("\n");
+    size = size - leaves;
+    while (size > 1)
+    {
+        rightRotateToXtimes(root, size / 2);
+        bst_print(root, 0);
+        printf("\n");
+        size /= 2;
+    }
+}
 
 int main()
 {
@@ -270,12 +386,21 @@ int main()
     bst_insert(t1, 18, NULL);
     bst_insert(t1, 22, NULL);
     bst_insert(t1, 35, NULL);
-    bst_print(t1->root, 0);
+    bst_insert(t1, 36, NULL);
+    bst_insert(t1, 37, NULL);
+    bst_insert(t1, 38, NULL);
+    bst_insert(t1, 39, NULL);
+    bst_insert(t1, 40, NULL);
+    bst_insert(t1, 41, NULL);
+    //bst_print(t1->root, 0);
     // rightRotator(t1->root);
     NODE gp = (NODE)t1;
-    rightRotatorIterator(gp);
-    toBalanced(t1->root, 11);
-    bst_print(t1->root, 0);
+    // rightRotatorIterator(gp);
+    leftRotatorIterator(gp);
+    toBalancedRight(gp, 17);
+    //bst_print(t1->root, 0);
+    // toBalanced(gp, 11);
+    // bst_print(t1->root, 0);
 
     return 0;
 }
