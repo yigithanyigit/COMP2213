@@ -272,7 +272,11 @@ NODE maxValueInSubTree(NODE node)
 
 NODE AVLDeletion(NODE node, int key)
 {
-    if (node->key == key)
+    if (key < node->key)
+        node->left = AVLDeletion(node->left, key);
+    else if (key > node->key)
+        node->right = AVLDeletion(node->right, key);
+    else
     {
         if (node->left == NULL && node->right == NULL)
         {
@@ -322,13 +326,6 @@ NODE AVLDeletion(NODE node, int key)
         }
         return node;
     }
-
-    if (key < node->key)
-        node->left = AVLDeletion(node->left, key);
-    else if (key > node->key)
-        node->right = AVLDeletion(node->right, key);
-    else
-        return node;
 
     node->height = max(height(node->left), height(node->right)) + 1;
 
@@ -422,13 +419,6 @@ int main()
     printf("\n\n\n");
     t2->root = AVLDeletion(t2->root, 20);
     t2->root = AVLDeletion(t2->root, 35);
-    t2->root = AVLDeletion(t2->root, 16);
-    t2->root = AVLDeletion(t2->root, 22);
-    t2->root = AVLDeletion(t2->root, 18);
-    t2->root = AVLDeletion(t2->root, 19);
-    t2->root = AVLDeletion(t2->root, 17);
-    t2->root = AVLDeletion(t2->root, 9);
-    t2->root = AVLDeletion(t2->root, 2);
 
     bst_print(t2->root, 0);
     return 0;
