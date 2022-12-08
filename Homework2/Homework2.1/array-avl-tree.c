@@ -127,18 +127,24 @@ void shiftDownRight(array_tree_ptr tree, int index)
 
 
 
-void shiftUpLeft(array_tree_ptr tree, int index)
+node_ptr shiftUpLeft(array_tree_ptr tree, int index)
 {
-    if (tree->tree[index].key != 0)
+    // Give non zero element, Create New array and fill this array after that insert newArray elements to the main array
+
+    if(tree->tree[index].key == 0 )
     {
-        tree->tree[index / 2].key = tree->tree[index].key;
-        memset(&tree->tree[index], 0, sizeof(node_t));
-        
-        shiftUpLeft(tree, left(index));
+        return NULL;
+    }
+    node_ptr node = shiftUpLeft(tree, left(index));
+    if(node == NULL)
+    {
+        return &tree->tree[index]
+    }
+    else
+    {
+
     }
 
-    tree->tree[index].height = max(height(tree, left(index)), height(tree, right(index))) + 1;
-    
 }
 
 /**
@@ -194,7 +200,7 @@ node_ptr rightRotateOnce(array_tree_ptr tree, int index)
     tree->tree[rightIndex].height = max(height(tree, left(rightIndex)), height(tree, right(rightIndex))) + 1;
     tree->tree[index].height = max(height(tree, leftIndex), height(tree, rightIndex)) + 1;
 
-    shiftUpLeft(tree, left(left(index)));
+    printf("KEY : %d ", tree->tree[index].key);
 
     return &tree->tree[index];
 }
