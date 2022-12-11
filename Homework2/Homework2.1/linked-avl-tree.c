@@ -229,7 +229,6 @@ node_ptr avlDeleteKey(node_ptr node, int key)
             temp->left = node->left;
             node = temp;
         }
-        return node;
     }
 
     node->height = max(height(node->left), height(node->right)) + 1;
@@ -266,27 +265,19 @@ node_ptr avlDeleteKey(node_ptr node, int key)
 int main()
 {
     avl_ptr t2 = treeInit();
-    /*
-    t2->root = avlInsert(t2->root, 2, NULL);
-    t2->root = avlInsert(t2->root, 1, NULL);
-    t2->root = avlInsert(t2->root, 16, NULL);
-    t2->root = avlInsert(t2->root, 5, NULL);
-    t2->root = avlInsert(t2->root, 9, NULL);
-    t2->root = avlInsert(t2->root, 17, NULL);
-    t2->root = avlInsert(t2->root, 20, NULL);
-    t2->root = avlInsert(t2->root, 19, NULL);
-    t2->root = avlInsert(t2->root, 18, NULL);
-    t2->root = avlInsert(t2->root, 22, NULL);
-    t2->root = avlInsert(t2->root, 35, NULL);
-    */
+
     t2->root = avlInsert(t2->root, 10, 0);
     t2->root = avlInsert(t2->root, 6, 0);
     t2->root = avlInsert(t2->root, 5, 0);
     t2->root = avlInsert(t2->root, 4, 0);
     t2->root = avlInsert(t2->root, 3, 0);
     t2->root = avlInsert(t2->root, 2, 0);
+    //t2->root = avlInsert(t2->root, 1, 0);
+    //t2->root = avlInsert(t2->root, 11, 0);
+    
+    /* TO DO DELETE KEYS */
+    
 
     print_tree(t2->root, 0);
-    // printf("%d", avlSearchKey(t2->root, 35)->key);
     return 0;
 }

@@ -1,3 +1,6 @@
+// Do a while Loop and define a cursor, do everthing with this cursor, write parentIndex functions for decrease level;
+// Otherones same as the recursive ones. Rotate it after that shift it !!!!
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,37 +20,6 @@ typedef struct
     int nodeCount;
 } *array_tree_ptr;
 
-/**
- * Helper Functions Start
- *
- *
- *
- */
-
-array_tree_ptr treeArrayInit()
-{
-    int nodes = 2;
-    nodes <<= treeInitialLevel;
-    nodes--;
-    // Initialized with a initial value of node to prevent realloc every time
-    // node_t *tree = calloc(nodes, sizeof(node_t));
-    array_tree_ptr tree = malloc(sizeof(array_tree_ptr));
-    tree->tree = calloc(nodes, sizeof(node_t));
-    tree->nodeCount = 0;
-    return tree;
-}
-
-node_ptr init_node(array_tree_ptr tree, int key, int index, void *data)
-{
-
-    tree->tree[index].key = key;
-    tree->tree[index].data = NULL;
-    tree->tree[index].height = 1;
-    tree->nodeCount++;
-
-    return &tree->tree[index];
-}
-
 int left(int index)
 {
     return 2 * index + 1;
@@ -61,12 +33,6 @@ int right(int index)
 int parent(int index)
 {
     return (index - 1) / 2;
-}
-
-void deleteNode(array_tree_ptr tree, int index)
-{
-    memset(&tree->tree[index], 0, sizeof(node_t));
-    tree->nodeCount--;
 }
 
 int height(array_tree_ptr tree, int index)
@@ -97,6 +63,39 @@ void printArray(array_tree_ptr tree)
             q++;
     }
     printf("\n");
+}
+
+array_tree_ptr treeArrayInit()
+{
+    int nodes = 2;
+    nodes <<= treeInitialLevel;
+    nodes--;
+    // Initialized with a initial value of node to prevent realloc every time
+    // node_t *tree = calloc(nodes, sizeof(node_t));
+    array_tree_ptr tree = malloc(sizeof(array_tree_ptr));
+    tree->tree = calloc(nodes, sizeof(node_t));
+    tree->nodeCount = 0;
+    return tree;
+}
+
+node_ptr init_node(array_tree_ptr tree, int key, int index, void *data)
+{
+
+    tree->tree[index].key = key;
+    tree->tree[index].data = NULL;
+    tree->tree[index].height = 1;
+    tree->nodeCount++;
+
+    return &tree->tree[index];
+}
+
+int maxValueInSubTree(array_tree_ptr tree, int index)
+{
+    while (tree->tree[index].key != 0)
+    {
+        index = left(index);
+    }
+    return parent(index);
 }
 
 void shiftDownLeft(array_tree_ptr tree, int index)
@@ -166,6 +165,12 @@ node_ptr shiftUpRight(array_tree_ptr tree, int index)
     return node;
 }
 
+void deleteNode(array_tree_ptr tree, int index)
+{
+    memset(&tree->tree[index], 0, sizeof(node_t));
+    tree->nodeCount--;
+}
+
 /**
  * Helper Functions End
  *
@@ -223,254 +228,215 @@ node_ptr rightRotateOnce(array_tree_ptr tree, int index)
     return &tree->tree[index];
 }
 
-int maxValueInSubTree(array_tree_ptr tree, int index)
+void arrayBalancer(array_tree_ptr tree, int initialCursor)
 {
-    while (tree->tree[index].key != 0)
+    int cursor = initialCursor;
+    int isRoot = 0;
+    while ((cursor > 0 || isRoot == 1) && tree->tree[cursor].key > 0)
     {
-        index = left(index);
+        tree->tree[cursor].height = 1 + max(height(tree, left(cursor)), height(tree, right(cursor)));
+        int heightDebug = tree->tree[cursor].height;
+        int balance = getBalanceFactor(tree, cursor);
+
+        if (balance == 2)
+        {
+            if (tree->tree[left(cursor)].key != 0 && tree->tree[right(cursor)].key != 0)
+            {
+                leftRotateOnce(tree, left(cursor));
+                rightRotateOnce(tree, cursor);
+                shiftUpLeft(tree, left(left(cursor)));
+                tree->tree[cursor].height = max(height(tree, left(cursor)), height(tree, left(cursor))) + 1;
+                return;
+            }
+            else
+            {
+                rightRotateOnce(tree, cursor);
+                return;
+            }
+        }
+        if (balance == -2)
+        {
+            if (tree->tree[left(cursor)].key != 0 && tree->tree[right(cursor)].key != 0)
+            {
+                rightRotateOnce(tree, right(cursor));
+                leftRotateOnce(tree, cursor);
+                shiftUpRight(tree, right(right(cursor)));
+                tree->tree[cursor].height = max(height(tree, left(cursor)), height(tree, left(cursor))) + 1;
+                return;
+            }
+            else
+            {
+                leftRotateOnce(tree, cursor);
+                return;
+            }
+        }
+        
+        cursor = parent(cursor);
+        if (cursor == 0 && isRoot == 1)
+            isRoot = 0;
+        else if (cursor == 0)
+            isRoot = 1;
     }
-    return parent(index);
 }
 
-int minValueInSubTree(array_tree_ptr tree, int index)
+void arrayAvlDeleteIterative(array_tree_ptr tree, int key)
 {
-    while (tree->tree[index].key != 0)
+    int cursor = 0;
+    char isDeleted = 0;
+    while (isDeleted == 0)
     {
-        index = right(index);
+        if (tree->tree[cursor].key == key)
+        {
+            if (tree->tree[left(cursor)].key == 0 && tree->tree[right(cursor)].key == 0)
+            {
+                deleteNode(tree, cursor);
+                arrayBalancer(tree, cursor);
+            }
+            else if (tree->tree[left(cursor)].key == 0)
+            {
+
+                deleteNode(tree, cursor);
+                shiftUpRight(tree, cursor);
+                arrayBalancer(tree, cursor);
+            }
+            else if (tree->tree[right(cursor)].key == 0)
+            {
+
+                deleteNode(tree, cursor);
+                shiftUpLeft(tree, cursor);
+                arrayBalancer(tree, cursor);
+            }
+
+            /* IF HAS 2 CHILDS */
+            /**
+             * IN BALANCED BST TREE CONCEPT THIS ONE IS VERY IMPORTANT CONDITION,
+             *
+             * FIRST OF ALL WE NEED TO FIND MOST LEFT OF RIGHT OR MOST RIGHT OF LEFT SUBTREE
+             * AFTER THAT WE NEED TO CHANGE AND LINK TO EACH OTHER AND IN FINAL IF WE HAVE A
+             * LEFT CHILD OF "MAX/MIN" NODE THEN WE NEED TO AGAIN LINK TO PARENT OF MAX
+             *    50                            60
+               /     \         delete(50)      /   \
+              40      70       --------->    40    70
+                     /  \                            \
+                    60   80                           80
+             */
+
+            else
+            {
+                int maxIndex = maxValueInSubTree(tree, right(cursor));
+
+                tree->tree[cursor] = tree->tree[maxIndex];
+
+                deleteNode(tree, maxIndex);
+            }
+            isDeleted = 1;
+        }
+        else if (key < tree->tree[cursor].key)
+        {
+            cursor = left(cursor);
+        }
+        else
+        {
+            cursor = right(cursor);
+        }
     }
-    return parent(index);
 }
 
-void arrayAvlInsert(array_tree_ptr tree, int key, int index)
+void arrayAvlInsertIterative(array_tree_ptr tree, int key)
 {
-    int leftIndex = left(index);
-    int rightIndex = right(index);
-    int keyDebug = tree->tree[index].key;
-    if (tree->tree[index].key == 0)
+    int cursor = 0;
+    char isAdded = 0;
+
+    while (isAdded == 0)
     {
-        init_node(tree, key, index, NULL);
-        return;
-    }
-
-    if (key < tree->tree[index].key)
-        arrayAvlInsert(tree, key, leftIndex);
-    else if (key > tree->tree[index].key)
-        arrayAvlInsert(tree, key, rightIndex);
-
-    tree->tree[index].height = 1 + max(height(tree, leftIndex), height(tree, rightIndex));
-    int heightDebug = tree->tree[index].height;
-
-    int rightHeightDebug = height(tree, right(index));
-    int leftHeightDebug = height(tree, left(index));
-    int balance = getBalanceFactor(tree, index);
-
-    if (balance == 2)
-    {
-        if (tree->tree[leftIndex].key != 0 && tree->tree[rightIndex].key != 0)
+        int keyDebug = tree->tree[cursor].key;
+        if (tree->tree[cursor].key == 0)
         {
-            leftRotateOnce(tree, left(index));
-            rightRotateOnce(tree, index);
-            shiftUpLeft(tree, left(left(index)));
-            tree->tree[index].height = max(height(tree, left(index)), height(tree, left(index))) + 1;
-            return;
+            init_node(tree, key, cursor, NULL);
+            arrayBalancer(tree, cursor);
+            isAdded = 1;
+        }
+        else if (key < tree->tree[cursor].key)
+        {
+            cursor = left(cursor);
         }
         else
         {
-            rightRotateOnce(tree, index);
-            return;
+            cursor = right(cursor);
         }
     }
-    if (balance == -2)
-    {
-        if (tree->tree[leftIndex].key != 0 && tree->tree[rightIndex].key != 0)
-        {
-            rightRotateOnce(tree, right(index));
-            leftRotateOnce(tree, index);
-            shiftUpRight(tree, right(right(index)));
-            tree->tree[index].height = max(height(tree, left(index)), height(tree, left(index))) + 1;
-            return;
-        }
-        else
-        {
-            leftRotateOnce(tree, index);
-            return;
-        }
-    }
-
-    return;
-}
-
-void arrayAvlDelete(array_tree_ptr tree, int key, int index)
-{
-
-    int leftIndex = left(index);
-    int rightIndex = right(index);
-    int keyDebug = tree->tree[index].key;
-    if (key < tree->tree[index].key)
-        arrayAvlDelete(tree, key, leftIndex);
-    else if (key > tree->tree[index].key)
-    {
-        arrayAvlDelete(tree, key, rightIndex);
-    }
-    else
-    {
-        if (tree->tree[left(index)].key == 0 && tree->tree[right(index)].key == 0)
-        {
-            deleteNode(tree, index);
-            return;
-        }
-        else if (tree->tree[left(index)].key == 0)
-        {
-
-            deleteNode(tree, index);
-            shiftUpRight(tree, index);
-            return;
-        }
-        else if (tree->tree[right(index)].key == 0)
-        {
-
-            deleteNode(tree, index);
-            shiftUpLeft(tree, index);
-            return;
-        }
-
-        /* IF HAS 2 CHILDS */
-        /**
-         * IN BALANCED BST TREE CONCEPT THIS ONE IS VERY IMPORTANT CONDITION,
-         *
-         * FIRST OF ALL WE NEED TO FIND MOST LEFT OF RIGHT OR MOST RIGHT OF LEFT SUBTREE
-         * AFTER THAT WE NEED TO CHANGE AND LINK TO EACH OTHER AND IN FINAL IF WE HAVE A
-         * LEFT CHILD OF "MAX/MIN" NODE THEN WE NEED TO AGAIN LINK TO PARENT OF MAX
-         *    50                            60
-           /     \         delete(50)      /   \
-          40      70       --------->    40    70
-                 /  \                            \
-                60   80                           80
-         */
-
-        else
-        {
-            int maxIndex = maxValueInSubTree(tree, right(index));
-
-            tree->tree[index] = tree->tree[maxIndex];
-
-            memset(&tree->tree[maxIndex], 0, sizeof(node_t));
-            tree->nodeCount--;
-        }
-    }
-
-    tree->tree[index].height = 1 + max(height(tree, leftIndex), height(tree, rightIndex));
-    int height = tree->tree[index].height;
-    int balance = getBalanceFactor(tree, index);
-
-    if (balance == 2)
-    {
-        if (tree->tree[leftIndex].key != 0 && tree->tree[rightIndex].key != 0)
-        {
-            leftRotateOnce(tree, left(index));
-            rightRotateOnce(tree, index);
-            shiftUpLeft(tree, left(left(index)));
-            return;
-        }
-        else
-        {
-            rightRotateOnce(tree, index);
-            return;
-        }
-    }
-    if (balance == -2)
-    {
-        if (tree->tree[leftIndex].key != 0 && tree->tree[rightIndex].key != 0)
-        {
-            rightRotateOnce(tree, right(index));
-            leftRotateOnce(tree, index);
-            shiftUpRight(tree, right(right(index)));
-            return;
-        }
-        else
-        {
-            leftRotateOnce(tree, index);
-            return;
-        }
-    }
-    return;
 }
 
 int main()
 {
     array_tree_ptr tr = treeArrayInit();
 
-    /**
-     * COMPILED WITH Succesfully gcc.exe (MinGW.org GCC-6.3.0-1) 6.3.0
-     *
-     */
-
     printf("Inserting: %d\n", 10);
-    arrayAvlInsert(tr, 10, 0);
+    arrayAvlInsertIterative(tr, 10);
     printArray(tr);
     printf("\n");
     printf("Inserting: %d\n", 6);
-    arrayAvlInsert(tr, 6, 0);
+    arrayAvlInsertIterative(tr, 6);
     printArray(tr);
     printf("\n");
     printf("Inserting: %d\n", 5);
-    arrayAvlInsert(tr, 5, 0);
+    arrayAvlInsertIterative(tr, 5);
     printArray(tr);
     printf("\n");
     printf("Inserting: %d\n", 4);
-    arrayAvlInsert(tr, 4, 0);
+    arrayAvlInsertIterative(tr, 4);
     printArray(tr);
     printf("\n");
     printf("Inserting: %d\n", 3);
-    arrayAvlInsert(tr, 3, 0);
+    arrayAvlInsertIterative(tr, 3);
     printArray(tr);
     printf("\n");
     printf("Inserting: %d\n", 2);
-    arrayAvlInsert(tr, 2, 0);
+    arrayAvlInsertIterative(tr, 2);
     printArray(tr);
     printf("\n");
     printf("Inserting: %d\n", 1);
-    arrayAvlInsert(tr, 1, 0);
+    arrayAvlInsertIterative(tr, 1);
     printArray(tr);
     printf("\n");
     printf("Inserting: %d\n", 11);
-    arrayAvlInsert(tr, 11, 0);
+    arrayAvlInsertIterative(tr, 11);
     printArray(tr);
     printf("\n");
 
     printf("Deleting: %d\n", 3);
-    arrayAvlDelete(tr, 3, 0);
+    arrayAvlDeleteIterative(tr, 3);
     printArray(tr);
     printf("\n");
     printf("Deleting: %d\n", 11);
-    arrayAvlDelete(tr, 11, 0);
+    arrayAvlDeleteIterative(tr, 11);
     printArray(tr);
     printf("\n");
     printf("Deleting: %d\n", 10);
-    arrayAvlDelete(tr, 10, 0);
+    arrayAvlDeleteIterative(tr, 10);
     printArray(tr);
     printf("\n");
     printf("Deleting: %d\n", 6);
-    arrayAvlDelete(tr, 6, 0);
+    arrayAvlDeleteIterative(tr, 6);
     printArray(tr);
     printf("\n");
     printf("Deleting: %d\n", 2);
-    arrayAvlDelete(tr, 2, 0);
+    arrayAvlDeleteIterative(tr, 2);
     printArray(tr);
     printf("\n");
     printf("Deleting: %d\n", 4);
-    arrayAvlDelete(tr, 4, 0);
+    arrayAvlDeleteIterative(tr, 4);
     printArray(tr);
     printf("\n");
-    printf("Deleting: %d\n", 5);
-    arrayAvlDelete(tr, 5, 0);
+    printf("Deleting: %d\n", 5); 
+    arrayAvlDeleteIterative(tr, 5);
     printArray(tr);
     printf("\n");
     printf("Deleting: %d\n", 1);
-    arrayAvlDelete(tr, 1, 0);
+    arrayAvlDeleteIterative(tr, 1);
     printArray(tr);
     printf("\n");
+    printArray(tr);
 
-    // printf("%d", getBalanceFactor(tr, 1));
     return 0;
 }
