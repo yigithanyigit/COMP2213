@@ -164,14 +164,17 @@ node_ptr avlInsert(node_ptr node, int key, void *data)
     return node;
 }
 
-node_ptr avlSearchKey(node_ptr node, int key)
+int avlSearchKey(node_ptr node, int key)
 {
-    if (key < node->key)
-        avlSearchKey(node->left, key);
+    if(node == NULL)
+        return -1;
+    else if (key == node->key )
+        return node->key;
+    else if (key < node->key)
+        return avlSearchKey(node->left, key);
     else if (key > node->key)
-        avlSearchKey(node->right, key);
-    else
-        return node;
+        return avlSearchKey(node->right, key);
+
 }
 
 node_ptr avlDeleteKey(node_ptr node, int key)
@@ -264,20 +267,83 @@ node_ptr avlDeleteKey(node_ptr node, int key)
 
 int main()
 {
-    avl_ptr t2 = treeInit();
+    avl_ptr tr = treeInit();
 
-    t2->root = avlInsert(t2->root, 10, 0);
-    t2->root = avlInsert(t2->root, 6, 0);
-    t2->root = avlInsert(t2->root, 5, 0);
-    t2->root = avlInsert(t2->root, 4, 0);
-    t2->root = avlInsert(t2->root, 3, 0);
-    t2->root = avlInsert(t2->root, 2, 0);
-    //t2->root = avlInsert(t2->root, 1, 0);
-    //t2->root = avlInsert(t2->root, 11, 0);
-    
-    /* TO DO DELETE KEYS */
-    
+    printf("Inserting: %d\n", 10);
+    tr->root = avlInsert(tr->root, 10, 0);
+    print_tree(tr->root,0);
+    printf("\n");
+    printf("Inserting: %d\n", 6);
+    tr->root = avlInsert(tr->root, 6, 0);
+    print_tree(tr->root,0);
+    printf("\n");
+    printf("Inserting: %d\n", 5);
+    tr->root = avlInsert(tr->root, 5, 0);
+    print_tree(tr->root,0);
+    printf("\n");
+    printf("Inserting: %d\n", 4);
+    tr->root = avlInsert(tr->root, 4, 0);
+    print_tree(tr->root,0);
+    printf("\n");
+    printf("Inserting: %d\n", 3);
+    tr->root = avlInsert(tr->root, 3, 0);
+    print_tree(tr->root, 0);
+    printf("\n");
+    printf("Inserting: %d\n", 2);
+    tr->root = avlInsert(tr->root, 2, 0);
+    print_tree(tr->root, 0);
+    printf("\n");
+    printf("Inserting: %d\n", 1);
+    tr->root = avlInsert(tr->root, 1, 0);
+    print_tree(tr->root, 0);
+    printf("\n");
+    printf("Inserting: %d\n", 11);
+    tr->root = avlInsert(tr->root, 11, 0);
+    print_tree(tr->root, 0);
+    printf("\n");
 
-    print_tree(t2->root, 0);
+    printf("Searching: %d Found -> key, Not Found -> NULL \n", 10);
+    printf("%d", avlSearchKey(tr->root, 10));
+    printf("\n\n");
+    printf("Searching: %d Found -> key, Not Found -> NULL \n", 6);
+    printf("%d", avlSearchKey(tr->root, 6));
+    printf("\n\n");
+    printf("Searching: %d Found -> key, Not Found -> NULL \n", 22);
+    printf("%d", avlSearchKey(tr->root, 22));
+    printf("\n\n");
+
+    printf("Deleting: %d\n", 3);
+    tr->root = avlDeleteKey(tr->root, 3);
+    print_tree(tr->root, 0);
+    printf("\n");
+    printf("Deleting: %d\n", 11);
+    tr->root = avlDeleteKey(tr->root, 11);
+    print_tree(tr->root, 0);
+    printf("\n");
+    printf("Deleting: %d\n", 10);
+    tr->root = avlDeleteKey(tr->root, 10);
+    print_tree(tr->root, 0);
+    printf("\n");
+    printf("Deleting: %d\n", 6);
+    tr->root = avlDeleteKey(tr->root, 6);
+    print_tree(tr->root, 0);
+    printf("\n");
+    printf("Deleting: %d\n", 2);
+    tr->root = avlDeleteKey(tr->root, 2);
+    print_tree(tr->root, 0);
+    printf("\n");
+    printf("Deleting: %d\n", 4);
+    tr->root = avlDeleteKey(tr->root, 4);
+    print_tree(tr->root, 0);
+    printf("\n");
+    printf("Deleting: %d\n", 5);
+    tr->root = avlDeleteKey(tr->root, 5);
+    print_tree(tr->root, 0);
+    printf("\n");
+    printf("Deleting: %d\n", 1);
+    tr->root = avlDeleteKey(tr->root, 1);
+    print_tree(tr->root, 0);
+    printf("\n");
+
     return 0;
 }

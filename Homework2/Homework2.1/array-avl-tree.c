@@ -251,8 +251,7 @@ void arrayAvlInsert(array_tree_ptr tree, int key, int index)
         init_node(tree, key, index, NULL);
         return;
     }
-
-    if (key < tree->tree[index].key)
+    else if (key < tree->tree[index].key)
         arrayAvlInsert(tree, key, leftIndex);
     else if (key > tree->tree[index].key)
         arrayAvlInsert(tree, key, rightIndex);
@@ -354,8 +353,7 @@ void arrayAvlDelete(array_tree_ptr tree, int key, int index)
 
             tree->tree[index] = tree->tree[maxIndex];
 
-            memset(&tree->tree[maxIndex], 0, sizeof(node_t));
-            tree->nodeCount--;
+            deleteNode(tree, maxIndex);
         }
     }
 
@@ -394,6 +392,22 @@ void arrayAvlDelete(array_tree_ptr tree, int key, int index)
         }
     }
     return;
+}
+
+int arrayAvlSearch(array_tree_ptr tree, int key, int index)
+{
+    int leftIndex = left(index);
+    int rightIndex = right(index);
+    if (tree->tree[index].key == key)
+    {
+        return tree->tree[index].key;
+    }
+    else if (tree->tree[index].key == 0)
+        return -1;
+    else if (key < tree->tree[index].key)
+        return arrayAvlSearch(tree, key, leftIndex);
+    else if (key > tree->tree[index].key)
+        return arrayAvlSearch(tree, key, rightIndex);
 }
 
 int main()
@@ -438,6 +452,16 @@ int main()
     printArray(tr);
     printf("\n");
 
+    printf("Searching: %d Found -> key, Not Found -> -1 \n", 10);
+    printf("%d", arrayAvlSearch(tr, 10, 0));
+    printf("\n\n");
+    printf("Searching: %d Found -> key, Not Found -> -1 \n", 6);
+    printf("%d", arrayAvlSearch(tr, 6, 0));
+    printf("\n\n");
+    printf("Searching: %d Found -> key, Not Found -> -1 \n", 22);
+    printf("%d", arrayAvlSearch(tr, 22, 0));
+    printf("\n\n");
+
     printf("Deleting: %d\n", 3);
     arrayAvlDelete(tr, 3, 0);
     printArray(tr);
@@ -471,6 +495,5 @@ int main()
     printArray(tr);
     printf("\n");
 
-    // printf("%d", getBalanceFactor(tr, 1));
     return 0;
 }

@@ -78,7 +78,7 @@ array_tree_ptr treeArrayInit()
     return tree;
 }
 
-node_ptr init_node(array_tree_ptr tree, int key, int index, void *data)
+void init_node(array_tree_ptr tree, int key, int index, void *data)
 {
 
     tree->tree[index].key = key;
@@ -86,7 +86,6 @@ node_ptr init_node(array_tree_ptr tree, int key, int index, void *data)
     tree->tree[index].height = 1;
     tree->nodeCount++;
 
-    return &tree->tree[index];
 }
 
 int maxValueInSubTree(array_tree_ptr tree, int index)
@@ -232,7 +231,7 @@ void arrayBalancer(array_tree_ptr tree, int initialCursor)
 {
     int cursor = initialCursor;
     int isRoot = 0;
-    while ((cursor > 0 || isRoot == 1) && tree->tree[cursor].key > 0)
+    while ((cursor > 0 || isRoot == 1))
     {
         tree->tree[cursor].height = 1 + max(height(tree, left(cursor)), height(tree, right(cursor)));
         int heightDebug = tree->tree[cursor].height;
@@ -270,7 +269,7 @@ void arrayBalancer(array_tree_ptr tree, int initialCursor)
                 return;
             }
         }
-        
+
         cursor = parent(cursor);
         if (cursor == 0 && isRoot == 1)
             isRoot = 0;
@@ -367,6 +366,33 @@ void arrayAvlInsertIterative(array_tree_ptr tree, int key)
     }
 }
 
+int arraySearchIterative(array_tree_ptr tree, int key)
+{
+    int cursor = 0;
+    int nodeCounter = 0;
+
+    while (nodeCounter <= tree->nodeCount)
+    {
+        int keyDebug = tree->tree[cursor].key;
+        if (tree->tree[cursor].key == key)
+        {
+            return tree->tree[cursor].key;
+        }
+        else if (key < tree->tree[cursor].key)
+        {
+            cursor = left(cursor);
+            nodeCounter += 1;
+        }
+        else
+        {
+            cursor = right(cursor);
+            nodeCounter += 1;
+        }
+    }
+
+    return -1;
+}
+
 int main()
 {
     array_tree_ptr tr = treeArrayInit();
@@ -404,6 +430,16 @@ int main()
     printArray(tr);
     printf("\n");
 
+    printf("Searching: %d Found -> key, Not Found -> -1 \n", 10);
+    printf("%d", arraySearchIterative(tr, 10));
+    printf("\n\n");
+    printf("Searching: %d Found -> key, Not Found -> -1 \n", 6);
+    printf("%d", arraySearchIterative(tr, 6));
+    printf("\n\n");
+    printf("Searching: %d Found -> key, Not Found -> -1 \n", 22);
+    printf("%d", arraySearchIterative(tr, 22));
+    printf("\n\n");
+
     printf("Deleting: %d\n", 3);
     arrayAvlDeleteIterative(tr, 3);
     printArray(tr);
@@ -428,7 +464,7 @@ int main()
     arrayAvlDeleteIterative(tr, 4);
     printArray(tr);
     printf("\n");
-    printf("Deleting: %d\n", 5); 
+    printf("Deleting: %d\n", 5);
     arrayAvlDeleteIterative(tr, 5);
     printArray(tr);
     printf("\n");
